@@ -29,11 +29,11 @@ Make sure your GitHub repository has these optimized files:
 
 ```
 agent-forge/
+├── Dockerfile                   # Root-level Dockerfile
+├── .dockerignore                # Root-level exclusions
+├── railway.json                 # Railway configuration
 ├── backend/
 │   ├── requirements.txt          # Lightweight version
-│   ├── Dockerfile               # Optimized for Railway
-│   ├── .dockerignore            # Excludes unnecessary files
-│   ├── railway.json             # Railway configuration
 │   └── memory/memory_manager.py # In-memory storage
 └── frontend/                    # Already deployed on Vercel
 ```

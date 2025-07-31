@@ -1,0 +1,74 @@
+# Frontend files (not needed for backend)
+frontend/
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+
+# ChromaDB data (not needed for deployment)
+chroma_db/
+*.db
+*.sqlite
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backend specific exclusions
+backend/venv/
+backend/__pycache__/
+backend/chroma_db/ 
