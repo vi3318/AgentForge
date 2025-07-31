@@ -14,7 +14,7 @@ app = FastAPI(title="AgentForge API")
 # CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://your-vercel-app.vercel.app"],
+    allow_origins=["*"],  # Allow all origins for deployment
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -56,6 +56,8 @@ async def root():
 @app.post("/process-code")
 async def process_code(request: dict):
     """Process code through the agent workflow"""
+    
+    print(f"Received request: {request}")  # Debug log
     
     # Get user ID from request headers for personalization
     user_id = request.get("userId", "anonymous")
@@ -194,3 +196,8 @@ async def test_endpoint():
             "process_code": "/process-code"
         }
     }
+
+@app.options("/process-code")
+async def process_code_options():
+    """Handle preflight CORS requests"""
+    return {"message": "CORS preflight successful"}

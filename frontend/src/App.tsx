@@ -29,7 +29,9 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     // Initialize WebSocket connection
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    console.log('API URL:', apiUrl); // Debug log
     const wsUrl = apiUrl.replace('http://', 'ws://').replace('https://', 'wss://');
+    console.log('WebSocket URL:', `${wsUrl}/ws/agent-updates`); // Debug log
     ws = new WebSocket(`${wsUrl}/ws/agent-updates`);
     
     ws.onmessage = (event) => {
@@ -80,6 +82,7 @@ const AppContent: React.FC = () => {
     
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      console.log('HTTP API URL:', apiUrl); // Debug log
       const response = await fetch(`${apiUrl}/process-code`, {
         method: 'POST',
         headers: {
