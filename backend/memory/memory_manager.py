@@ -1,157 +1,99 @@
 import json
-from typing import List, Dict, Any
-import hashlib
+import os
+from typing import Dict, List, Any, Optional
+from datetime import datetime
 
 class MemoryManager:
     def __init__(self):
-        try:
-            import chromadb
-            # Use the new ChromaDB client configuration
-            self.client = chromadb.PersistentClient(path="./chroma_db")
-            self.use_chroma = True
-        except Exception as e:
-            print(f"Warning: ChromaDB not available, using in-memory storage: {e}")
-            self.use_chroma = False
-            self.memory_store = {
-                "code_patterns": [],
-                "agent_interactions": [],
-                "improvements": []
-            }
+        """Initialize memory manager with in-memory storage only"""
+        self.memory_store = {
+            "code_patterns": [],
+            "agent_interactions": [],
+            "improvements": []
+        }
+        self.use_chroma = False
+        print("Using in-memory storage for deployment")
+    
+    def store_code_pattern(self, code: str, pattern_type: str, metadata: Dict[str, Any]) -> None:
+        """Store a code pattern in memory"""
+        pattern = {
+            "code": code,
+            "type": pattern_type,
+            "metadata": metadata,
+            "timestamp": datetime.now().isoformat()
+        }
+        self.memory_store["code_patterns"].append(pattern)
         
-        # Create collections for different types of memory
-        if self.use_chroma:
-            try:
-                # Try to get existing collections or create new ones
-                try:
-                    self.code_collection = self.client.get_collection("code_patterns")
-                except:
-                    self.code_collection = self.client.create_collection("code_patterns")
-                
-                try:
-                    self.agent_collection = self.client.get_collection("agent_interactions")
-                except:
-                    self.agent_collection = self.client.create_collection("agent_interactions")
-                
-                try:
-                    self.improvement_collection = self.client.get_collection("improvements")
-                except:
-                    self.improvement_collection = self.client.create_collection("improvements")
-                    
-            except Exception as e:
-                print(f"Warning: Could not create ChromaDB collections: {e}")
-                self.use_chroma = False
-                self.memory_store = {
-                    "code_patterns": [],
-                    "agent_interactions": [],
-                    "improvements": []
-                }
+        # Keep only last 100 patterns to prevent memory bloat
+        if len(self.memory_store["code_patterns"]) > 100:
+            self.memory_store["code_patterns"] = self.memory_store["code_patterns"][-100:]
     
-    def store_code_pattern(self, code: str, pattern_type: str, metadata: Dict[str, Any]):
-        """Store code patterns for future reference"""
-        code_hash = hashlib.md5(code.encode()).hexdigest()
+    def store_agent_interaction(self, agent_name: str, context: Dict[str, Any], output: Dict[str, Any]) -> None:
+        """Store an agent interaction in memory"""
+        interaction = {
+            "agent": agent_name,
+            "context": context,
+            "output": output,
+            "timestamp": datetime.now().isoformat()
+        }
+        self.memory_store["agent_interactions"].append(interaction)
         
-        if self.use_chroma:
-            try:
-                self.code_collection.add(
-                    documents=[code],
-                    metadatas=[{
-                        "pattern_type": pattern_type,
-                        "hash": code_hash,
-                        **metadata
-                    }],
-                    ids=[code_hash]
-                )
-            except Exception as e:
-                print(f"Warning: Could not store in ChromaDB: {e}")
-        else:
-            # Fallback to in-memory storage
-            self.memory_store["code_patterns"].append({
-                "code": code,
-                "metadata": {
-                    "pattern_type": pattern_type,
-                    "hash": code_hash,
-                    **metadata
-                }
-            })
+        # Keep only last 200 interactions
+        if len(self.memory_store["agent_interactions"]) > 200:
+            self.memory_store["agent_interactions"] = self.memory_store["agent_interactions"][-200:]
     
-    def store_agent_interaction(self, agent_name: str, input_data: Dict, output_data: Dict):
-        """Store agent interactions for learning"""
-        interaction_id = f"{agent_name}_{hash(str(input_data))}"
+    def find_similar_patterns(self, code: str, limit: int = 5) -> List[Dict[str, Any]]:
+        """Find similar code patterns using simple text matching"""
+        similar_patterns = []
         
-        if self.use_chroma:
-            try:
-                self.agent_collection.add(
-                    documents=[json.dumps(output_data)],
-                    metadatas=[{
-                        "agent": agent_name,
-                        "input": json.dumps(input_data),
-                        "timestamp": "2025-01-20T10:00:00Z"
-                    }],
-                    ids=[interaction_id]
-                )
-            except Exception as e:
-                print(f"Warning: Could not store in ChromaDB: {e}")
-        else:
-            # Fallback to in-memory storage
-            self.memory_store["agent_interactions"].append({
-                "output": output_data,
-                "metadata": {
-                    "agent": agent_name,
-                    "input": input_data,
-                    "timestamp": "2025-01-20T10:00:00Z"
-                }
-            })
+        for pattern in self.memory_store["code_patterns"]:
+            # Simple similarity check based on function/class names
+            code_lower = code.lower()
+            pattern_lower = pattern["code"].lower()
+            
+            # Check for common keywords
+            common_keywords = ["function", "class", "def", "const", "let", "var", "import", "export"]
+            similarity_score = 0
+            
+            for keyword in common_keywords:
+                if keyword in code_lower and keyword in pattern_lower:
+                    similarity_score += 1
+            
+            if similarity_score > 0:
+                similar_patterns.append({
+                    "pattern": pattern,
+                    "similarity": similarity_score
+                })
+        
+        # Sort by similarity and return top matches
+        similar_patterns.sort(key=lambda x: x["similarity"], reverse=True)
+        return [p["pattern"] for p in similar_patterns[:limit]]
     
-    def find_similar_patterns(self, code: str, n_results: int = 5) -> List[Dict]:
-        """Find similar code patterns from memory"""
-        if self.use_chroma:
-            try:
-                results = self.code_collection.query(
-                    query_texts=[code],
-                    n_results=n_results
-                )
-                
-                return [
-                    {
-                        "code": doc,
-                        "metadata": metadata,
-                        "distance": distance
-                    }
-                    for doc, metadata, distance in zip(
-                        results["documents"][0],
-                        results["metadatas"][0],
-                        results["distances"][0]
-                    )
-                ]
-            except Exception as e:
-                print(f"Warning: Could not query ChromaDB: {e}")
-                return []
-        else:
-            # Fallback to in-memory search
-            return self.memory_store["code_patterns"][:n_results]
+    def get_agent_history(self, agent_name: str, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Get interaction history for a specific agent"""
+        history = []
+        
+        for interaction in self.memory_store["agent_interactions"]:
+            if interaction["agent"] == agent_name:
+                # Filter by user_id if provided
+                if user_id is None or interaction["context"].get("userId") == user_id:
+                    history.append(interaction)
+        
+        return history[-50:]  # Return last 50 interactions
     
-    def get_agent_history(self, agent_name: str, limit: int = 10) -> List[Dict]:
-        """Get recent history for a specific agent"""
-        if self.use_chroma:
-            try:
-                results = self.agent_collection.get(
-                    where={"agent": agent_name},
-                    limit=limit
-                )
-                
-                return [
-                    {
-                        "output": json.loads(doc),
-                        "metadata": metadata
-                    }
-                    for doc, metadata in zip(results["documents"], results["metadatas"])
-                ]
-            except Exception as e:
-                print(f"Warning: Could not query ChromaDB: {e}")
-                return []
-        else:
-            # Fallback to in-memory search
-            return [
-                item for item in self.memory_store["agent_interactions"]
-                if item["metadata"]["agent"] == agent_name
-            ][:limit] 
+    def get_memory_stats(self) -> Dict[str, Any]:
+        """Get memory statistics"""
+        return {
+            "total_patterns": len(self.memory_store["code_patterns"]),
+            "total_interactions": len(self.memory_store["agent_interactions"]),
+            "total_improvements": len(self.memory_store["improvements"]),
+            "storage_type": "in-memory"
+        }
+    
+    def clear_memory(self) -> None:
+        """Clear all memory (useful for testing)"""
+        self.memory_store = {
+            "code_patterns": [],
+            "agent_interactions": [],
+            "improvements": []
+        } 

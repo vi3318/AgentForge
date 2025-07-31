@@ -25,7 +25,7 @@ Frontend (React + Vite) ←→ Backend (FastAPI) ←→ AI Agents (Gemini + Lang
 - **FastAPI** - Modern Python web framework
 - **Gemini API** - Google's latest LLM for agent reasoning
 - **LangGraph** - Multi-agent workflow orchestration
-- **ChromaDB** - Vector database for memory
+- **In-Memory Storage** - Lightweight memory system for deployment
 - **WebSockets** - Real-time communication
 
 ### Frontend
@@ -165,7 +165,10 @@ The system uses ChromaDB to store:
 
 ## 🚀 Deployment
 
-### Backend (Railway)
+### Backend (Railway) - Optimized for Free Tier
+
+The backend has been optimized to work within Railway's 4GB image size limit:
+
 ```bash
 # Install Railway CLI
 npm install -g @railway/cli
@@ -175,6 +178,14 @@ railway login
 railway init
 railway up
 ```
+
+**Key Optimizations:**
+- ✅ Removed heavy dependencies (`chromadb`, `sentence-transformers`)
+- ✅ Lightweight in-memory storage
+- ✅ Optimized Dockerfile with Python 3.11-slim
+- ✅ Image size reduced from 7GB to under 4GB
+
+**See [RAILWAY_DEPLOYMENT.md](./RAILWAY_DEPLOYMENT.md) for detailed deployment guide.**
 
 ### Frontend (Vercel)
 ```bash
