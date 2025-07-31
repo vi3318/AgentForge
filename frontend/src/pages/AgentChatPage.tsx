@@ -66,439 +66,490 @@ export const AgentChatPage: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  const getImprovedResponse = (agent: string, message: string): string => {
-    const lowerMessage = message.toLowerCase();
+  const analyzeUserQuestion = (question: string, agent: string): string => {
+    const lowerQuestion = question.toLowerCase();
     
-    const responses = {
-      architect: {
-        'linked list': `For linked list problems, here are the key architectural patterns:
-
-**1. Two-Pointer Technique**
-- Fast & Slow pointers for cycle detection
-- Start pointers at different positions
-- Useful for: finding middle, detecting cycles
-
-**2. Recursive Approach**
-- Break problem into smaller subproblems
-- Base case: null or single node
-- Useful for: reversing, merging, tree-like operations
-
-**3. Iterative Approach**
-- Use while loops with current pointer
-- Maintain previous pointer for connections
-- Useful for: traversal, modification
-
-**4. Dummy Node Pattern**
-- Create dummy head to simplify edge cases
-- Avoid null pointer issues
-- Useful for: insertion, deletion at head
-
-**Best Practice**: Always consider edge cases (empty list, single node) and draw out the pointer movements!`,
-        
-        'design pattern': `Here are the most important design patterns for your code:
-
-**1. Strategy Pattern**
-- Define family of algorithms
-- Make them interchangeable
-- Example: Different sorting algorithms
-
-**2. Observer Pattern**
-- One-to-many dependency
-- Automatic updates when state changes
-- Example: Event systems, UI updates
-
-**3. Factory Pattern**
-- Create objects without specifying exact class
-- Centralize object creation logic
-- Example: Database connections, UI components
-
-**4. Singleton Pattern**
-- Ensure only one instance exists
-- Global access point
-- Example: Configuration, logging
-
-**5. Command Pattern**
-- Encapsulate request as object
-- Parameterize clients with requests
-- Example: Undo/redo functionality
-
-Choose patterns based on your specific problem domain!`,
-        
-        'architecture': `Here's a clean architecture approach:
-
-**1. Separation of Concerns**
-- Data layer (models, repositories)
-- Business logic layer (services)
-- Presentation layer (UI components)
-
-**2. Dependency Inversion**
-- High-level modules don't depend on low-level modules
-- Both depend on abstractions
-- Example: Interface-based design
-
-**3. Single Responsibility**
-- Each class/module has one reason to change
-- Makes code more maintainable
-- Easier to test and debug
-
-**4. Open/Closed Principle**
-- Open for extension, closed for modification
-- Use inheritance and polymorphism
-- Example: Plugin architecture
-
-**5. Interface Segregation**
-- Clients shouldn't depend on interfaces they don't use
-- Keep interfaces focused and small`,
-        
-        default: `As an Architect, I focus on code structure and design. Here are key principles:
-
-**1. Clean Architecture**
-- Separate concerns into layers
-- Make dependencies flow inward
-- Keep business logic independent
-
-**2. Design Patterns**
-- Use proven solutions for common problems
-- Strategy, Observer, Factory patterns
-- Choose based on your specific needs
-
-**3. Code Organization**
-- Group related functionality
-- Use meaningful names
-- Keep functions small and focused
-
-**4. Scalability**
-- Design for future growth
-- Consider performance implications
-- Plan for maintainability
-
-**5. Performance Optimization**
-- Analyze time and space complexity
-- Use appropriate data structures
-- Consider caching and memoization
-- Optimize critical paths
-
-**6. Error Handling**
-- Validate inputs thoroughly
-- Handle edge cases gracefully
-- Provide meaningful error messages
-- Implement proper logging
-
-What specific architectural challenge are you facing?`
-      },
-      
-      implementer: {
-        'optimize': `Here are code optimization strategies:
-
-**1. Algorithm Optimization**
-- Choose right data structures
-- Reduce time complexity
-- Example: Use HashMap for O(1) lookups
-
-**2. Memory Optimization**
-- Avoid memory leaks
-- Use efficient data structures
-- Example: Use StringBuilder for string concatenation
-
-**3. Loop Optimization**
-- Reduce nested loops
-- Use early termination
-- Example: Break when condition met
-
-**4. Function Optimization**
-- Cache expensive computations
-- Use memoization
-- Example: Fibonacci with memoization
-
-**5. Code Quality**
-- Remove dead code
-- Simplify complex logic
-- Use built-in functions
-
-**Performance Tip**: Profile your code to find bottlenecks first!`,
-        
-        'clean code': `Here are clean code principles:
-
-**1. Meaningful Names**
-- Use descriptive variable/function names
-- Avoid abbreviations
-- Example: calculateTotalPrice() not calc()
-
-**2. Small Functions**
-- One function, one responsibility
-- Keep under 20 lines
-- Easy to test and understand
-
-**3. Comments**
-- Explain WHY, not WHAT
-- Use comments for complex business logic
-- Keep code self-documenting
-
-**4. Error Handling**
-- Use specific exceptions
-- Handle edge cases
-- Provide meaningful error messages
-
-**5. SOLID Principles**
-- Single Responsibility
-- Open/Closed
-- Liskov Substitution
-- Interface Segregation
-- Dependency Inversion
-
-**6. Code Formatting**
-- Consistent indentation
-- Proper spacing
-- Follow style guides`,
-        
-        default: `As an Implementer, I focus on writing clean, efficient code. Here are my key areas:
-
-**1. Code Quality**
-- Write readable, maintainable code
-- Follow naming conventions
-- Keep functions small and focused
-- Use meaningful variable names
-
-**2. Performance Optimization**
-- Choose efficient algorithms and data structures
-- Profile and measure performance
-- Optimize critical paths
-- Use caching and memoization
-
-**3. Best Practices**
-- Follow SOLID principles
-- Use design patterns appropriately
-- Write self-documenting code
-- Handle errors gracefully
-
-**4. Language-Specific Features**
-- Use modern language features
-- Leverage built-in libraries
-- Follow language conventions
-- Use appropriate frameworks
-
-**5. Code Review**
-- Improve existing code
-- Remove code smells
-- Maintain functionality while improving structure
-- Add proper documentation
-
-What specific implementation challenge do you need help with?`
-      },
-      
-      tester: {
-        'test': `Here's a comprehensive testing strategy:
-
-**1. Unit Testing**
-- Test individual functions/methods
-- Mock dependencies
-- Example: Test each sorting algorithm separately
-
-**2. Integration Testing**
-- Test component interactions
-- Test API endpoints
-- Example: Test database operations
-
-**3. Edge Cases**
-- Empty/null inputs
-- Boundary conditions
-- Invalid data formats
-- Example: Test with empty arrays, null values
-
-**4. Test Coverage**
-- Aim for 80-90% coverage
-- Focus on critical paths
-- Test error conditions
-
-**5. Test Types**
-- Happy path (normal flow)
-- Error path (exception handling)
-- Edge cases (boundary conditions)
-
-**6. Testing Tools**
-- Jest, Mocha, JUnit
-- Mocking libraries
-- Coverage tools
-
-**Best Practice**: Write tests before or alongside your code (TDD)!`,
-        
-        'coverage': `Here's how to achieve good test coverage:
-
-**1. Line Coverage**
-- Execute every line of code
-- Use coverage tools
-- Aim for 80%+ coverage
-
-**2. Branch Coverage**
-- Test all conditional branches
-- Include true/false paths
-- Example: Test both if/else blocks
-
-**3. Function Coverage**
-- Test all functions/methods
-- Include private methods
-- Test different parameter combinations
-
-**4. Statement Coverage**
-- Execute every statement
-- Include error handling
-- Test exception paths
-
-**5. Coverage Tools**
-- Jest: --coverage flag
-- Istanbul for JavaScript
-- JaCoCo for Java
-
-**6. Coverage Reports**
-- Identify untested code
-- Focus on critical areas
-- Set coverage thresholds
-
-**Remember**: Quality over quantity - meaningful tests are better than high coverage with poor tests!`,
-        
-        default: `As a Tester, I ensure code quality and reliability. Here are my key areas:
-
-**1. Test Strategy**
-- Unit, integration, and system tests
-- Automated testing pipelines
-- Continuous testing practices
-
-**2. Quality Assurance**
-- Bug detection and prevention
-- Code review processes
-- Quality metrics tracking
-
-**3. Edge Case Testing**
-- Boundary conditions
-- Error scenarios
-- Performance under stress
-
-**4. Test Automation**
-- CI/CD integration
-- Automated test suites
-- Regression testing
-
-**5. Coverage Analysis**
-- Identify untested code
-- Measure test effectiveness
-- Improve test quality
-
-What specific testing challenge are you facing?`
-      },
-      
-      security: {
-        'security': `Here are essential security practices:
-
-**1. Input Validation**
-- Validate all user inputs
-- Use parameterized queries
-- Example: SQL injection prevention
-
-**2. Authentication**
-- Strong password policies
-- Multi-factor authentication
-- Session management
-
-**3. Authorization**
-- Role-based access control
-- Principle of least privilege
-- Regular permission audits
-
-**4. Data Protection**
-- Encrypt sensitive data
-- Secure data transmission (HTTPS)
-- Regular backups
-
-**5. Common Vulnerabilities**
-- SQL Injection: Use prepared statements
-- XSS: Sanitize user inputs
-- CSRF: Use tokens
-- Buffer Overflow: Validate input lengths
-
-**6. Security Headers**
-- Content Security Policy
-- X-Frame-Options
-- X-Content-Type-Options
-
-**Best Practice**: Security by design - build it in from the start!`,
-        
-        'vulnerability': `Here's how to identify and fix vulnerabilities:
-
-**1. Code Review**
-- Manual security review
-- Automated static analysis
-- Peer review processes
-
-**2. Penetration Testing**
-- Simulate real attacks
-- Identify weak points
-- Test security controls
-
-**3. Vulnerability Scanning**
-- Automated tools
-- Regular scans
-- Dependency checking
-
-**4. Common Vulnerabilities**
-- **SQL Injection**: Use ORM or prepared statements
-- **XSS**: Sanitize all user inputs
-- **CSRF**: Implement anti-CSRF tokens
-- **Injection**: Validate and sanitize inputs
-
-**5. Security Tools**
-- OWASP ZAP
-- SonarQube
-- Snyk for dependencies
-
-**6. Best Practices**
-- Keep dependencies updated
-- Use security headers
-- Implement logging and monitoring
-
-**Remember**: Security is an ongoing process, not a one-time task!`,
-        
-        default: `As a Security expert, I protect your code from vulnerabilities. Here are my key areas:
-
-**1. Vulnerability Assessment**
-- Identify security weaknesses
-- Analyze attack vectors
-- Assess risk levels
-
-**2. Security Best Practices**
-- Input validation
-- Authentication/authorization
-- Data encryption
-
-**3. Threat Modeling**
-- Identify potential threats
-- Assess attack scenarios
-- Plan mitigation strategies
-
-**4. Security Testing**
-- Penetration testing
-- Code security review
-- Vulnerability scanning
-
-**5. Compliance**
-- Security standards
-- Regulatory requirements
-- Industry best practices
-
-What specific security concern do you need help with?`
-      }
+    // Analyze the question type and context
+    const isAskingAbout = {
+      optimization: lowerQuestion.includes('optimize') || lowerQuestion.includes('performance') || lowerQuestion.includes('speed'),
+      patterns: lowerQuestion.includes('pattern') || lowerQuestion.includes('design') || lowerQuestion.includes('architecture'),
+      testing: lowerQuestion.includes('test') || lowerQuestion.includes('coverage') || lowerQuestion.includes('bug'),
+      security: lowerQuestion.includes('security') || lowerQuestion.includes('vulnerability') || lowerQuestion.includes('safe'),
+      codeQuality: lowerQuestion.includes('clean') || lowerQuestion.includes('quality') || lowerQuestion.includes('best practice'),
+      specificProblem: lowerQuestion.includes('problem') || lowerQuestion.includes('issue') || lowerQuestion.includes('challenge'),
+      howTo: lowerQuestion.includes('how') || lowerQuestion.includes('what') || lowerQuestion.includes('why'),
+      comparison: lowerQuestion.includes('vs') || lowerQuestion.includes('difference') || lowerQuestion.includes('compare')
     };
 
-    const agentResponses = responses[agent as keyof typeof responses];
-    if (!agentResponses) return 'I understand your question. Let me analyze this...';
+    // Generate contextual response based on agent and question analysis
+    if (agent === 'architect') {
+      if (isAskingAbout.optimization) {
+        return `I see you're asking about optimization. As an Architect, here's my approach:
 
-    // Check for specific keywords in the message
-    for (const [keyword, response] of Object.entries(agentResponses)) {
-      if (lowerMessage.includes(keyword)) {
-        return response;
+**Performance Architecture Strategy:**
+1. **Identify Bottlenecks First**
+   - Profile your code to find the real performance issues
+   - Don't optimize prematurely
+   - Focus on the 80/20 rule
+
+2. **Critical Path Optimization**
+   - Map out your application's critical paths
+   - Optimize the most frequently executed code
+   - Consider caching strategies for expensive operations
+
+3. **System-Level Optimization**
+   - Database query optimization
+   - Network request batching
+   - Memory usage patterns
+   - Concurrency and parallelization
+
+4. **Architectural Patterns for Performance**
+   - CQRS (Command Query Responsibility Segregation)
+   - Event sourcing for high-throughput systems
+   - Microservices for horizontal scaling
+   - Caching layers (Redis, CDN)
+
+**Key Principle**: Always measure before and after optimization. What specific performance issue are you facing?`;
       }
-    }
+      
+      if (isAskingAbout.patterns) {
+        return `Great question about design patterns! Here's my architectural perspective:
 
-    return agentResponses.default;
+**When to Use Design Patterns:**
+1. **Strategy Pattern** - When you have multiple algorithms for the same task
+2. **Observer Pattern** - For event-driven architectures
+3. **Factory Pattern** - When object creation is complex
+4. **Singleton** - Only when you truly need global state
+5. **Command Pattern** - For undo/redo functionality
+
+**Architectural Decision Framework:**
+- **Problem First**: What specific problem are you solving?
+- **Context Matters**: Patterns that work in one context may not in another
+- **Simplicity**: Don't over-engineer - start simple
+- **Evolution**: Patterns can emerge as your system grows
+
+**Anti-Patterns to Avoid:**
+- Using patterns just because they're "cool"
+- Over-abstracting simple problems
+- Not considering maintenance costs
+
+What specific architectural challenge are you trying to solve?`;
+      }
+      
+      if (isAskingAbout.specificProblem) {
+        return `I understand you're facing a specific architectural challenge. Let me help you think through this systematically:
+
+**Problem Analysis Framework:**
+1. **Root Cause Analysis**
+   - What's the core problem?
+   - What are the symptoms vs. causes?
+   - What constraints are you working under?
+
+2. **Solution Design Process**
+   - Brainstorm multiple approaches
+   - Evaluate trade-offs (performance, maintainability, complexity)
+   - Consider long-term implications
+
+3. **Architectural Trade-offs**
+   - Performance vs. Maintainability
+   - Flexibility vs. Simplicity
+   - Scalability vs. Development Speed
+
+4. **Decision Making**
+   - Document your reasoning
+   - Consider the team's expertise
+   - Plan for future changes
+
+**My Approach**: I'd need to understand your specific context better. Can you share more details about your problem, constraints, and goals?`;
+      }
+      
+      return `As an Architect, I think about code structure and design systematically. Let me analyze your question...
+
+**My Architectural Philosophy:**
+1. **Problem-Driven Design**: Start with the problem, not the solution
+2. **Trade-off Awareness**: Every decision has costs and benefits
+3. **Evolutionary Architecture**: Design for change, not perfection
+4. **Context Matters**: What works in one situation may not in another
+
+**Key Questions I Ask:**
+- What problem are you really trying to solve?
+- What are your constraints (time, team, technology)?
+- How will this system evolve over time?
+- What are the failure modes?
+
+**My Process:**
+1. Understand the problem deeply
+2. Explore multiple solution approaches
+3. Evaluate trade-offs systematically
+4. Choose the simplest solution that meets requirements
+5. Plan for future changes
+
+Can you tell me more about your specific situation? I want to understand your context better to give you the most relevant advice.`;
+    }
+    
+    if (agent === 'implementer') {
+      if (isAskingAbout.optimization) {
+        return `I see you're asking about optimization. As an Implementer, here's my practical approach:
+
+**Code Optimization Strategy:**
+1. **Profile First**
+   - Use profiling tools to find real bottlenecks
+   - Don't guess - measure everything
+   - Focus on the slowest parts
+
+2. **Algorithm Optimization**
+   - Choose the right data structures
+   - Reduce time complexity where possible
+   - Use built-in optimized functions
+
+3. **Memory Optimization**
+   - Avoid memory leaks
+   - Use efficient data structures
+   - Consider object pooling for expensive objects
+
+4. **Practical Techniques**
+   - Loop optimization (unrolling, early termination)
+   - Function inlining for small, frequently called functions
+   - Caching expensive computations
+   - Lazy loading and evaluation
+
+**Implementation Tips:**
+- Start with clean, readable code
+- Optimize only after profiling
+- Keep optimizations documented
+- Test performance improvements
+
+What specific code are you trying to optimize? I can help you identify the best approaches.`;
+      }
+      
+      if (isAskingAbout.codeQuality) {
+        return `Clean code is my specialty! Here's my implementation approach:
+
+**Clean Code Principles:**
+1. **Meaningful Names**
+   - Variables and functions should be self-documenting
+   - Avoid abbreviations and magic numbers
+   - Use consistent naming conventions
+
+2. **Small Functions**
+   - Single responsibility principle
+   - Keep functions under 20 lines
+   - One level of abstraction per function
+
+3. **SOLID Principles**
+   - **S**ingle Responsibility: One reason to change
+   - **O**pen/Closed: Open for extension, closed for modification
+   - **L**iskov Substitution: Subtypes are substitutable
+   - **I**nterface Segregation: Small, focused interfaces
+   - **D**ependency Inversion: Depend on abstractions
+
+4. **Code Organization**
+   - Group related functionality
+   - Use consistent formatting
+   - Remove dead code
+   - Keep dependencies minimal
+
+**Implementation Checklist:**
+- [ ] Functions have clear, single purposes
+- [ ] Variables have descriptive names
+- [ ] No code duplication
+- [ ] Error handling is graceful
+- [ ] Comments explain WHY, not WHAT
+
+What specific code quality issue are you working on?`;
+      }
+      
+      return `As an Implementer, I focus on writing clean, efficient, and maintainable code. Let me think about your question...
+
+**My Implementation Philosophy:**
+1. **Readability First**: Code is read more than written
+2. **Practical Solutions**: Focus on what works in practice
+3. **Incremental Improvement**: Small, consistent improvements
+4. **Testing as Documentation**: Tests show how code should work
+
+**Key Implementation Areas:**
+- **Code Structure**: Organizing code for clarity and maintainability
+- **Performance**: Writing efficient, scalable code
+- **Error Handling**: Graceful failure and recovery
+- **Testing**: Ensuring code works correctly
+- **Documentation**: Making code self-explanatory
+
+**My Process:**
+1. Understand the requirements clearly
+2. Design the simplest solution that works
+3. Write clean, testable code
+4. Refactor for clarity and performance
+5. Document the important decisions
+
+What specific implementation challenge are you facing? I'd love to help you write better code!`;
+    }
+    
+    if (agent === 'tester') {
+      if (isAskingAbout.testing) {
+        return `Testing is crucial for code quality! Here's my comprehensive testing approach:
+
+**Testing Strategy:**
+1. **Test Pyramid**
+   - Many unit tests (fast, cheap)
+   - Fewer integration tests
+   - Even fewer end-to-end tests
+
+2. **Unit Testing Best Practices**
+   - Test one thing at a time
+   - Use descriptive test names
+   - Arrange-Act-Assert pattern
+   - Mock external dependencies
+
+3. **Test Coverage**
+   - Aim for 80-90% coverage
+   - Focus on critical business logic
+   - Don't chase 100% coverage blindly
+
+4. **Testing Types**
+   - **Happy Path**: Normal operation
+   - **Edge Cases**: Boundary conditions
+   - **Error Cases**: Exception handling
+   - **Performance**: Load and stress testing
+
+**Testing Tools & Techniques:**
+- Jest, Mocha, JUnit for unit testing
+- Mocking libraries for dependencies
+- Coverage tools to identify gaps
+- Test data builders for complex scenarios
+
+**My Testing Philosophy:**
+- Tests are documentation
+- Write tests before code (TDD)
+- Tests should be fast and reliable
+- Focus on behavior, not implementation
+
+What specific testing challenge are you working on?`;
+      }
+      
+      if (isAskingAbout.coverage) {
+        return `Test coverage is important, but quality matters more! Here's my approach:
+
+**Coverage Strategy:**
+1. **Line Coverage**: Execute every line of code
+2. **Branch Coverage**: Test all conditional paths
+3. **Function Coverage**: Test all functions/methods
+4. **Statement Coverage**: Execute every statement
+
+**Quality Over Quantity:**
+- **Meaningful Tests**: Tests that catch real bugs
+- **Maintainable Tests**: Tests that are easy to update
+- **Fast Tests**: Tests that run quickly
+- **Reliable Tests**: Tests that don't flake
+
+**Coverage Best Practices:**
+1. **Focus on Critical Paths**
+   - Business logic is more important than utility functions
+   - Error handling paths are crucial
+   - Edge cases often hide bugs
+
+2. **Avoid Coverage Gaming**
+   - Don't write tests just to increase coverage
+   - Focus on testing behavior, not implementation
+   - Test the "why", not just the "what"
+
+3. **Coverage Tools**
+   - Use coverage reports to identify gaps
+   - Set realistic coverage targets (80-90%)
+   - Review uncovered code regularly
+
+**My Coverage Philosophy:**
+- 80% coverage with good tests > 100% coverage with poor tests
+- Focus on critical business logic
+- Test error conditions thoroughly
+- Keep tests simple and focused
+
+What's your current testing situation?`;
+      }
+      
+      return `As a Tester, I ensure code quality and reliability. Let me think about your testing question...
+
+**My Testing Philosophy:**
+1. **Quality Assurance**: Preventing bugs before they reach production
+2. **Risk-Based Testing**: Focus on high-risk areas
+3. **Automation**: Automate repetitive testing tasks
+4. **Continuous Testing**: Test early and often
+
+**Testing Areas I Focus On:**
+- **Unit Testing**: Testing individual components
+- **Integration Testing**: Testing component interactions
+- **System Testing**: Testing the entire system
+- **Performance Testing**: Ensuring system meets performance requirements
+- **Security Testing**: Identifying security vulnerabilities
+
+**My Testing Process:**
+1. Understand the requirements and acceptance criteria
+2. Design test cases that cover all scenarios
+3. Implement automated tests where possible
+4. Execute tests and analyze results
+5. Report issues and track resolution
+
+**Testing Tools I Use:**
+- Unit testing frameworks (Jest, JUnit, etc.)
+- Mocking libraries for dependencies
+- Coverage tools to measure test effectiveness
+- CI/CD integration for continuous testing
+
+What specific testing challenge are you facing? I can help you design effective test strategies!`;
+    }
+    
+    if (agent === 'security') {
+      if (isAskingAbout.security) {
+        return `Security is critical! Here's my comprehensive security approach:
+
+**Security Fundamentals:**
+1. **Defense in Depth**
+   - Multiple layers of security controls
+   - Don't rely on a single security measure
+   - Assume any single layer can be compromised
+
+2. **Input Validation**
+   - Validate all user inputs
+   - Use parameterized queries (SQL injection prevention)
+   - Sanitize data before processing
+   - Implement proper encoding
+
+3. **Authentication & Authorization**
+   - Strong password policies
+   - Multi-factor authentication
+   - Role-based access control
+   - Session management and timeout
+
+4. **Common Vulnerabilities to Prevent:**
+   - **SQL Injection**: Use ORMs or prepared statements
+   - **XSS**: Sanitize all user inputs
+   - **CSRF**: Implement anti-CSRF tokens
+   - **Injection Attacks**: Validate and sanitize all inputs
+
+**Security Best Practices:**
+- Keep dependencies updated
+- Use HTTPS for all communications
+- Implement proper logging and monitoring
+- Regular security audits and penetration testing
+- Follow the principle of least privilege
+
+**Security Tools & Techniques:**
+- Static analysis tools (SonarQube, Snyk)
+- Dynamic testing tools (OWASP ZAP)
+- Dependency vulnerability scanners
+- Security headers implementation
+
+What specific security concern are you addressing?`;
+      }
+      
+      if (isAskingAbout.vulnerability) {
+        return `Vulnerability assessment is crucial! Here's my systematic approach:
+
+**Vulnerability Assessment Process:**
+1. **Code Review**
+   - Manual security review
+   - Automated static analysis
+   - Peer review with security focus
+
+2. **Penetration Testing**
+   - Simulate real attack scenarios
+   - Test all entry points
+   - Identify weak points in defenses
+
+3. **Vulnerability Scanning**
+   - Automated vulnerability scanners
+   - Regular dependency checks
+   - Configuration security analysis
+
+4. **Common Vulnerability Types:**
+   - **Input Validation**: Missing or weak input validation
+   - **Authentication**: Weak authentication mechanisms
+   - **Authorization**: Insufficient access controls
+   - **Data Exposure**: Sensitive data not properly protected
+   - **Configuration**: Insecure default configurations
+
+**Vulnerability Management:**
+1. **Identification**: Find vulnerabilities through various methods
+2. **Assessment**: Evaluate risk level and impact
+3. **Prioritization**: Focus on high-risk vulnerabilities first
+4. **Remediation**: Fix vulnerabilities systematically
+5. **Verification**: Confirm vulnerabilities are resolved
+
+**Security Tools:**
+- OWASP ZAP for dynamic testing
+- SonarQube for static analysis
+- Snyk for dependency scanning
+- Burp Suite for web application testing
+
+**My Security Philosophy:**
+- Security by design, not as an afterthought
+- Regular security assessments
+- Continuous monitoring and improvement
+- Stay updated with latest threats and countermeasures
+
+What specific vulnerability are you concerned about?`;
+      }
+      
+      return `As a Security expert, I protect your code from vulnerabilities and threats. Let me think about your security question...
+
+**My Security Philosophy:**
+1. **Security by Design**: Build security in from the start
+2. **Defense in Depth**: Multiple layers of protection
+3. **Risk-Based Approach**: Focus on high-impact vulnerabilities
+4. **Continuous Improvement**: Regular security assessments
+
+**Security Areas I Focus On:**
+- **Vulnerability Assessment**: Identifying security weaknesses
+- **Threat Modeling**: Understanding potential attack vectors
+- **Security Testing**: Penetration testing and code review
+- **Compliance**: Meeting security standards and regulations
+- **Incident Response**: Planning for security incidents
+
+**My Security Process:**
+1. Understand the system and its security requirements
+2. Identify potential threats and vulnerabilities
+3. Assess risk levels and prioritize issues
+4. Recommend security controls and countermeasures
+5. Verify that security measures are effective
+
+**Security Tools & Techniques:**
+- Static and dynamic analysis tools
+- Penetration testing frameworks
+- Vulnerability scanning tools
+- Security monitoring and logging
+
+**Key Security Principles:**
+- Principle of least privilege
+- Defense in depth
+- Fail securely
+- Security through obscurity is not security
+
+What specific security concern do you need help with? I can help you identify and address security vulnerabilities!`;
+    }
+    
+    // Default intelligent response
+    return `I understand your question. Let me think about this from my perspective as a ${agent}...
+
+**My Analysis:**
+Based on your question, I can see you're looking for practical guidance. As a ${agent}, my approach is to:
+
+1. **Understand the Context**: What specific problem are you trying to solve?
+2. **Consider Multiple Approaches**: There's usually more than one way to solve a problem
+3. **Evaluate Trade-offs**: Every solution has costs and benefits
+4. **Focus on Practical Results**: What works in your specific situation?
+
+**My Process:**
+- Ask clarifying questions to understand your needs better
+- Provide specific, actionable advice
+- Consider your constraints and context
+- Suggest multiple approaches when appropriate
+
+**Key Questions for You:**
+- What's your specific goal or problem?
+- What constraints are you working under?
+- What have you tried so far?
+- What's your team's experience level?
+
+Can you give me more context about your situation? I want to provide the most relevant and helpful advice for your specific case.`;
   };
 
   const handleSendMessage = async () => {
@@ -517,7 +568,10 @@ What specific security concern do you need help with?`
     setIsLoading(true);
 
     try {
-      const response = getImprovedResponse(selectedAgent, inputMessage);
+      // Simulate thinking time for more realistic interaction
+      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+      
+      const response = analyzeUserQuestion(inputMessage, selectedAgent);
       
       const agentMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),

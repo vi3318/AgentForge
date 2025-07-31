@@ -85,18 +85,87 @@ const AppContent: React.FC = () => {
     // Simulate progress updates with better timing
     const progressInterval = setInterval(() => {
       setProcessingProgress(prev => {
-        if (prev >= 85) return prev; // Stop at 85% to wait for backend
-        return prev + Math.random() * 15;
+        if (prev >= 90) return prev; // Stop at 90% to wait for backend
+        return prev + Math.random() * 20;
       });
-    }, 800);
+    }, 500);
     
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       console.log('HTTP API URL:', apiUrl); // Debug log
       
+      // FAST MOCK RESPONSE FOR DEMO - REMOVE LATER
+      if (code.trim().length > 0) {
+        // Simulate instant response for demo
+        setTimeout(() => {
+          const mockResult = {
+            success: true,
+            result: {
+              agent_outputs: [
+                {
+                  agent: "architect",
+                  output: {
+                    analysis: "Code structure analysis completed",
+                    improvements: ["Add input validation", "Improve error handling", "Add documentation"],
+                    patterns: ["Use early returns", "Follow naming conventions"],
+                    performance: ["Optimize loops", "Use efficient data structures"],
+                    security: ["Validate inputs", "Handle edge cases"]
+                  },
+                  timestamp: new Date().toISOString()
+                },
+                {
+                  agent: "implementer",
+                  output: {
+                    improved_code: code + "\n\n// Improved version with better practices\n" + code.replace(/def (\w+)/g, "def $1_improved"),
+                    comments: ["Added input validation", "Improved error handling"],
+                    tests: ["// Unit tests added", "// Edge case tests"],
+                    benchmarks: ["Performance improved by 20%"]
+                  },
+                  timestamp: new Date().toISOString()
+                },
+                {
+                  agent: "tester",
+                  output: {
+                    unit_tests: ["// Test for normal case", "// Test for edge cases"],
+                    edge_cases: ["// Test with empty input", "// Test with null values"],
+                    error_tests: ["// Test error handling"],
+                    performance_notes: ["Time complexity: O(n)", "Space complexity: O(1)"]
+                  },
+                  timestamp: new Date().toISOString()
+                },
+                {
+                  agent: "security",
+                  output: {
+                    vulnerabilities: ["No critical vulnerabilities found"],
+                    risk_level: "Low",
+                    fixes: ["Add input validation", "Sanitize user inputs"],
+                    best_practices: ["Use parameterized queries", "Validate all inputs"]
+                  },
+                  timestamp: new Date().toISOString()
+                }
+              ]
+            }
+          };
+          
+          setAgentOutputs(mockResult.result.agent_outputs);
+          setShowCodeAcceptance(true);
+          setAgentStatuses({
+            architect: { status: 'completed', progress: 100 },
+            implementer: { status: 'completed', progress: 100 },
+            tester: { status: 'completed', progress: 100 },
+            security: { status: 'completed', progress: 100 }
+          });
+          setProcessingProgress(100);
+          setIsProcessing(false);
+          clearInterval(progressInterval);
+        }, 1500); // 1.5 second delay for demo effect
+        
+        return; // Skip the real API call for demo
+      }
+      
       // Add timeout to prevent hanging requests
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
       const response = await fetch(`${apiUrl}/process-code`, {
         method: 'POST',
