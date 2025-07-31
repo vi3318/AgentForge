@@ -145,17 +145,6 @@ const AppContent: React.FC = () => {
       setIsProcessing(false);
       clearInterval(progressInterval);
     }
-    } catch (error) {
-      console.error('Error submitting code:', error);
-      setAgentStatuses({
-        architect: { status: 'error', progress: 0 },
-        implementer: { status: 'error', progress: 0 },
-        tester: { status: 'error', progress: 0 },
-        security: { status: 'error', progress: 0 }
-      });
-    } finally {
-      setIsProcessing(false);
-    }
   };
 
   const handleAcceptCode = (improvedCode: string) => {
