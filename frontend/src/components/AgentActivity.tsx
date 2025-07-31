@@ -6,7 +6,9 @@ import {
   Wrench,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  TrendingUp,
+  Zap
 } from 'lucide-react';
 
 interface AgentOutput {
@@ -49,29 +51,85 @@ export const AgentActivity: React.FC<AgentActivityProps> = ({ outputs }) => {
 
   const renderOutputSummary = (output: any) => {
     if (!output) {
-      return 'No output available';
+      return 'Processing...';
     }
     
     const summary = [];
     
-    if (output.analysis) summary.push(`📊 Analysis: ${output.analysis}`);
+    // Architect summary
+    if (output.analysis) summary.push(`📊 ${output.analysis}`);
     if (output.improvements && output.improvements.length > 0) {
-      summary.push(`🔧 ${output.improvements.length} improvements suggested`);
+      summary.push(`🔧 ${output.improvements.length} optimizations`);
     }
-    if (output.patterns && output.patterns.length > 0) {
-      summary.push(`🏗️ ${output.patterns.length} patterns identified`);
+    if (output.complexity_analysis) {
+      const comp = output.complexity_analysis;
+      summary.push(`⚡ ${comp.current} → ${comp.optimized}`);
     }
-    if (output.performance && output.performance.length > 0) {
-      summary.push(`⚡ ${output.performance.length} performance tips`);
+    
+    // Implementer summary
+    if (output.improved_code) summary.push(`💻 Optimized code generated`);
+    if (output.complexity_analysis) {
+      const comp = output.complexity_analysis;
+      summary.push(`📈 ${comp.time} time, ${comp.space} space`);
     }
-    if (output.security && output.security.length > 0) {
-      summary.push(`🛡️ ${output.security.length} security checks`);
+    
+    // Tester summary
+    if (output.unit_tests) summary.push(`🧪 ${output.unit_tests.length} test cases`);
+    if (output.coverage) summary.push(`📊 ${output.coverage}`);
+    if (output.complexity_verification) {
+      const comp = output.complexity_verification;
+      summary.push(`✅ ${comp.time} verified`);
     }
-    if (output.unit_tests) summary.push(`🧪 Unit tests created`);
-    if (output.integration_tests) summary.push(`🔗 Integration tests added`);
-    if (output.vulnerabilities) summary.push(`🔍 Security audit completed`);
+    
+    // Security summary
+    if (output.vulnerabilities) summary.push(`🛡️ ${output.vulnerabilities.length} checks`);
+    if (output.risk_assessment) summary.push(`⚠️ ${output.risk_assessment}`);
     
     return summary.length > 0 ? summary.join(' • ') : 'Processing...';
+  };
+
+  const renderComplexityAnalysis = (output: any) => {
+    if (!output.complexity_analysis && !output.complexity_verification) return null;
+    
+    return (
+      <div className="mt-3 p-3 bg-gray-800 rounded border border-gray-600">
+        <div className="flex items-center space-x-2 mb-2">
+          <TrendingUp className="w-4 h-4 text-green-400" />
+          <span className="text-sm font-medium text-green-400">Complexity Analysis</span>
+        </div>
+        <div className="text-xs text-gray-300 space-y-1">
+          {output.complexity_analysis && (
+            <>
+              <div><span className="text-red-400">Current:</span> {output.complexity_analysis.current}</div>
+              <div><span className="text-green-400">Optimized:</span> {output.complexity_analysis.optimized}</div>
+              <div className="text-gray-400 italic">{output.complexity_analysis.explanation}</div>
+            </>
+          )}
+          {output.complexity_verification && (
+            <>
+              <div><span className="text-blue-400">Time:</span> {output.complexity_verification.time}</div>
+              <div><span className="text-blue-400">Space:</span> {output.complexity_verification.space}</div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderImprovedCode = (output: any) => {
+    if (!output.improved_code) return null;
+    
+    return (
+      <div className="mt-3 p-3 bg-gray-800 rounded border border-gray-600">
+        <div className="flex items-center space-x-2 mb-2">
+          <Zap className="w-4 h-4 text-yellow-400" />
+          <span className="text-sm font-medium text-yellow-400">Optimized Code</span>
+        </div>
+        <pre className="text-xs text-gray-300 whitespace-pre-wrap bg-gray-900 p-2 rounded">
+          {output.improved_code}
+        </pre>
+      </div>
+    );
   };
 
   return (
@@ -118,10 +176,15 @@ export const AgentActivity: React.FC<AgentActivityProps> = ({ outputs }) => {
               </div>
               
               {isExpanded && (
-                <div className="mt-3 p-3 bg-gray-800 rounded border border-gray-600">
-                  <pre className="text-xs text-gray-300 whitespace-pre-wrap">
-                    {JSON.stringify(output.output, null, 2)}
-                  </pre>
+                <div className="space-y-3">
+                  {renderComplexityAnalysis(output.output)}
+                  {renderImprovedCode(output.output)}
+                  <div className="p-3 bg-gray-800 rounded border border-gray-600">
+                    <div className="text-xs text-gray-400 mb-2">Full Analysis:</div>
+                    <pre className="text-xs text-gray-300 whitespace-pre-wrap">
+                      {JSON.stringify(output.output, null, 2)}
+                    </pre>
+                  </div>
                 </div>
               )}
             </div>

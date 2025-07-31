@@ -12,7 +12,7 @@ class ArchitectAgent(BaseAgent):
         requirements = input_data.get("requirements", "")
         
         prompt = f"""
-        You are a Senior Software Architect. Analyze this code and provide specific architectural improvements.
+        You are a Senior Software Architect. Analyze this code and provide specific architectural improvements with Big O notation analysis.
         
         Code:
         {code}
@@ -20,18 +20,29 @@ class ArchitectAgent(BaseAgent):
         Requirements:
         {requirements}
         
-        Provide a concise analysis with 3-5 specific improvements. Be actionable and practical.
+        Provide a comprehensive analysis with:
+        1. Current time and space complexity analysis
+        2. Specific optimization suggestions with Big O improvements
+        3. Design patterns that could be applied
+        4. Performance bottlenecks identification
+        5. Security considerations
         
-        Format as JSON with keys: analysis, improvements, patterns, performance, security
+        Format as JSON with keys: analysis, improvements, patterns, performance, security, complexity_analysis
+        
+        The complexity_analysis should include:
+        - current: "O(n²) time, O(1) space" (example)
+        - optimized: "O(n) time, O(n) space" (example)
+        - explanation: Brief explanation of the optimization
         
         Focus on:
+        - Algorithm efficiency improvements
+        - Data structure optimizations
         - Input validation and error handling
-        - Performance optimizations
-        - Code readability
+        - Code readability and maintainability
         - Security considerations
-        - Documentation
+        - Documentation improvements
         
-        Keep responses concise and actionable.
+        Keep responses concise and actionable with specific Big O notation.
         """
         
         response = self.model.generate_content(prompt)
@@ -54,7 +65,7 @@ class ImplementationAgent(BaseAgent):
         suggestions = input_data.get("suggestions", "")
         
         prompt = f"""
-        You are a Senior Software Developer. Implement the suggested improvements to this code.
+        You are a Senior Software Developer. Implement optimized improvements to this code with better time/space complexity.
         
         Original Code:
         {code}
@@ -62,19 +73,30 @@ class ImplementationAgent(BaseAgent):
         Suggested Improvements:
         {suggestions}
         
-        Provide an improved version of the code with the key improvements implemented.
-        Make the code better, more robust, and follow best practices.
+        Provide an optimized version of the code that:
+        1. Improves time and/or space complexity
+        2. Implements proper error handling and input validation
+        3. Follows best practices and is well-documented
+        4. Is more robust and maintainable
         
-        Format as JSON with keys: improved_code, comments, tests, benchmarks
+        If the code is already optimal, provide the same code with better documentation and error handling.
+        
+        Format as JSON with keys: improved_code, comments, tests, benchmarks, complexity_analysis
+        
+        The complexity_analysis should include:
+        - time: "O(n) - single pass through array" (example)
+        - space: "O(n) - HashMap storage" (example)
+        - explanation: Brief explanation of the optimization
         
         Focus on:
+        - Algorithm optimizations (HashMap, two-pointer, etc.)
         - Error handling and input validation
-        - Performance improvements
+        - Performance improvements with Big O notation
         - Documentation and type hints
-        - Code readability
+        - Code readability and maintainability
         - Security considerations
         
-        Keep the improved code concise and practical.
+        Keep the improved code concise, practical, and well-documented.
         """
         
         response = self.model.generate_content(prompt)
@@ -96,20 +118,32 @@ class TestingAgent(BaseAgent):
         code = input_data.get("code", "")
         
         prompt = f"""
-        You are a Senior QA Engineer. Create tests for this code.
+        You are a Senior QA Engineer. Create comprehensive tests for this code and verify complexity analysis.
         
         Code:
         {code}
         
         Provide essential tests:
-        1. Unit tests for main functions
-        2. Edge case tests (null inputs, empty arrays)
-        3. Error handling tests
-        4. Basic performance considerations
+        1. Unit tests for main functions with edge cases
+        2. Integration tests for component interactions
+        3. Performance tests to verify Big O complexity
+        4. Error handling tests for invalid inputs
+        5. Security tests for input validation
         
-        Format as JSON with keys: unit_tests, edge_cases, error_tests, performance_notes
+        Format as JSON with keys: unit_tests, integration_tests, edge_cases, performance_tests, coverage, complexity_verification
         
-        Keep tests concise and practical.
+        The complexity_verification should include:
+        - time: "O(n) verified through profiling" (example)
+        - space: "O(n) confirmed with memory analysis" (example)
+        
+        Focus on:
+        - Testing all code paths and edge cases
+        - Verifying performance characteristics
+        - Ensuring proper error handling
+        - Testing security aspects
+        - Achieving good test coverage
+        
+        Keep tests concise, practical, and focused on verifying the code's correctness and performance.
         """
         
         response = self.model.generate_content(prompt)
@@ -131,20 +165,35 @@ class SecurityAgent(BaseAgent):
         code = input_data.get("code", "")
         
         prompt = f"""
-        You are a Senior Security Engineer. Audit this code for security vulnerabilities.
+        You are a Senior Security Engineer. Audit this code for security vulnerabilities and provide comprehensive security analysis.
         
         Code:
         {code}
         
-        Provide essential security analysis:
-        1. Input validation issues
-        2. Data exposure risks
-        3. Authentication concerns
-        4. Security best practices
+        Provide comprehensive security analysis:
+        1. Input validation and sanitization issues
+        2. Data exposure and privacy risks
+        3. Authentication and authorization concerns
+        4. Common vulnerability patterns (SQL injection, XSS, etc.)
+        5. Security best practices recommendations
+        6. Risk assessment and mitigation strategies
         
-        Format as JSON with keys: vulnerabilities, risk_level, fixes, best_practices
+        Format as JSON with keys: vulnerabilities, risk_assessment, fixes, best_practices, compliance, security_analysis
         
-        Keep analysis concise and actionable.
+        The security_analysis should include:
+        - input_validation: "✅ Properly implemented" or "❌ Missing validation"
+        - error_handling: "✅ Graceful failure" or "❌ Poor error handling"
+        - data_exposure: "✅ No sensitive data exposure" or "❌ Potential data leak"
+        
+        Focus on:
+        - Input validation and sanitization
+        - Error handling and logging
+        - Data protection and privacy
+        - Authentication and authorization
+        - Security headers and configurations
+        - Compliance with security standards
+        
+        Keep analysis concise, actionable, and focused on practical security improvements.
         """
         
         response = self.model.generate_content(prompt)

@@ -99,47 +99,145 @@ const AppContent: React.FC = () => {
         // Simulate instant response for demo
         setTimeout(() => {
           const mockResult = {
-            success: true,
             result: {
               agent_outputs: [
                 {
-                  agent: "architect",
+                  agent: 'architect',
                   output: {
-                    analysis: "Code structure analysis completed",
-                    improvements: ["Add input validation", "Improve error handling", "Add documentation"],
-                    patterns: ["Use early returns", "Follow naming conventions"],
-                    performance: ["Optimize loops", "Use efficient data structures"],
-                    security: ["Validate inputs", "Handle edge cases"]
+                    analysis: 'Code structure analysis completed',
+                    improvements: [
+                      'Use HashMap for O(1) lookup instead of nested loops',
+                      'Implement early termination for better performance',
+                      'Add input validation for edge cases'
+                    ],
+                    patterns: [
+                      'Two-pointer technique for array problems',
+                      'Hash-based lookup pattern'
+                    ],
+                    performance: [
+                      'Current: O(n²) time complexity',
+                      'Optimized: O(n) time complexity',
+                      'Space complexity: O(n) for HashMap'
+                    ],
+                    security: [
+                      'Add input validation',
+                      'Handle edge cases (empty array, null values)'
+                    ],
+                    complexity_analysis: {
+                      current: 'O(n²) time, O(1) space',
+                      optimized: 'O(n) time, O(n) space',
+                      explanation: 'Using HashMap reduces lookup time from O(n) to O(1)'
+                    }
                   },
                   timestamp: new Date().toISOString()
                 },
                 {
-                  agent: "implementer",
+                  agent: 'implementer',
                   output: {
-                    improved_code: code + "\n\n// Improved version with better practices\n" + code.replace(/def (\w+)/g, "def $1_improved"),
-                    comments: ["Added input validation", "Improved error handling"],
-                    tests: ["// Unit tests added", "// Edge case tests"],
-                    benchmarks: ["Performance improved by 20%"]
+                    improved_code: `def two_sum_optimized(arr, target):
+    """
+    Optimized Two Sum solution using HashMap
+    Time Complexity: O(n)
+    Space Complexity: O(n)
+    """
+    if not arr or len(arr) < 2:
+        return None
+    
+    # HashMap to store complements
+    seen = {}
+    
+    for i, num in enumerate(arr):
+        complement = target - num
+        
+        # If complement exists, we found our pair
+        if complement in seen:
+            return (seen[complement], i)
+        
+        # Store current number and its index
+        seen[num] = i
+    
+    return None
+
+# Example test
+arr = [2, 7, 11, 15, 1, 8]
+target = 9
+result = two_sum_optimized(arr, target)
+print("Indices:", result)  # Output: (0, 1)`,
+                    comments: [
+                      'Added input validation',
+                      'Used HashMap for O(1) lookups',
+                      'Improved time complexity from O(n²) to O(n)',
+                      'Added comprehensive documentation'
+                    ],
+                    tests: [
+                      'Unit tests for edge cases',
+                      'Performance benchmarks included'
+                    ],
+                    benchmarks: [
+                      '50x faster for large arrays',
+                      'Memory usage optimized'
+                    ],
+                    complexity_analysis: {
+                      time: 'O(n) - single pass through array',
+                      space: 'O(n) - HashMap storage',
+                      explanation: 'Trades space for time efficiency'
+                    }
                   },
                   timestamp: new Date().toISOString()
                 },
                 {
-                  agent: "tester",
+                  agent: 'tester',
                   output: {
-                    unit_tests: ["// Test for normal case", "// Test for edge cases"],
-                    edge_cases: ["// Test with empty input", "// Test with null values"],
-                    error_tests: ["// Test error handling"],
-                    performance_notes: ["Time complexity: O(n)", "Space complexity: O(1)"]
+                    unit_tests: [
+                      'Test with valid input: [2,7,11,15], target=9',
+                      'Test with no solution: [1,2,3], target=10',
+                      'Test with duplicate numbers: [3,3], target=6',
+                      'Test edge cases: empty array, single element'
+                    ],
+                    integration_tests: [
+                      'Test with large arrays (10,000 elements)',
+                      'Test performance benchmarks'
+                    ],
+                    edge_cases: [
+                      'Empty array handling',
+                      'Single element array',
+                      'No valid solution',
+                      'Multiple valid solutions'
+                    ],
+                    performance_tests: [
+                      'Time complexity verification',
+                      'Memory usage analysis'
+                    ],
+                    coverage: '95% test coverage achieved',
+                    complexity_verification: {
+                      time: 'O(n) verified through profiling',
+                      space: 'O(n) confirmed with memory analysis'
+                    }
                   },
                   timestamp: new Date().toISOString()
                 },
                 {
-                  agent: "security",
+                  agent: 'security',
                   output: {
-                    vulnerabilities: ["No critical vulnerabilities found"],
-                    risk_level: "Low",
-                    fixes: ["Add input validation", "Sanitize user inputs"],
-                    best_practices: ["Use parameterized queries", "Validate all inputs"]
+                    vulnerabilities: [
+                      'No critical vulnerabilities found',
+                      'Input validation implemented'
+                    ],
+                    risk_assessment: 'Low risk - proper input handling',
+                    fixes: [
+                      'Added null/empty array checks',
+                      'Implemented proper error handling'
+                    ],
+                    best_practices: [
+                      'Defensive programming applied',
+                      'Input sanitization in place'
+                    ],
+                    compliance: 'Compliant with security standards',
+                    security_analysis: {
+                      input_validation: '✅ Properly implemented',
+                      error_handling: '✅ Graceful failure',
+                      data_exposure: '✅ No sensitive data exposure'
+                    }
                   },
                   timestamp: new Date().toISOString()
                 }
@@ -159,7 +257,6 @@ const AppContent: React.FC = () => {
           setIsProcessing(false);
           clearInterval(progressInterval);
         }, 1500); // 1.5 second delay for demo effect
-        
         return; // Skip the real API call for demo
       }
       
