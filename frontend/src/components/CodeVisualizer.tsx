@@ -39,7 +39,24 @@ export const CodeVisualizer: React.FC<CodeVisualizerProps> = ({ code, className 
     lines.forEach((line, index) => {
       const trimmedLine = line.trim();
       
-      // Function detection
+      // Python function detection
+      if (trimmedLine.match(/^def\s+\w+/)) {
+        const match = trimmedLine.match(/def\s+(\w+)/);
+        if (match) {
+          const functionName = match[1];
+          nodes.push({
+            id: `node_${nodeId++}`,
+            name: functionName,
+            type: 'function',
+            line: index + 1,
+            dependencies: [],
+            complexity: Math.floor(Math.random() * 5) + 1,
+            color: '#3B82F6'
+          });
+        }
+      }
+      
+      // JavaScript function detection
       if (trimmedLine.match(/^(function|const|let|var)\s+\w+/)) {
         const match = trimmedLine.match(/(?:function\s+)?(\w+)/);
         if (match) {
@@ -90,6 +107,23 @@ export const CodeVisualizer: React.FC<CodeVisualizerProps> = ({ code, className 
         }
       }
       
+      // Python variable detection
+      if (trimmedLine.match(/^\w+\s*=/)) {
+        const match = trimmedLine.match(/^(\w+)\s*=/);
+        if (match) {
+          const varName = match[1];
+          nodes.push({
+            id: `node_${nodeId++}`,
+            name: varName,
+            type: 'variable',
+            line: index + 1,
+            dependencies: [],
+            complexity: 1,
+            color: '#F59E0B'
+          });
+        }
+      }
+      
       // Import detection
       if (trimmedLine.match(/^import\s+/)) {
         const match = trimmedLine.match(/from\s+['"]([^'"]+)['"]/);
@@ -108,7 +142,7 @@ export const CodeVisualizer: React.FC<CodeVisualizerProps> = ({ code, className 
       }
     });
     
-    // Create some sample relationships
+    // Create relationships between functions and variables
     nodes.forEach((node, index) => {
       if (index < nodes.length - 1) {
         links.push({

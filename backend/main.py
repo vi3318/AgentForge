@@ -22,7 +22,7 @@ app.add_middleware(
 
 # Configure Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 # Initialize workflow and memory
 workflow = create_agent_forge_workflow()

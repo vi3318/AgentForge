@@ -25,6 +25,7 @@ const AppContent: React.FC = () => {
   const [agentStatuses, setAgentStatuses] = useState({});
   const [showCodeAcceptance, setShowCodeAcceptance] = useState(false);
   const [originalCode, setOriginalCode] = useState('');
+  const [processingProgress, setProcessingProgress] = useState(0);
 
   useEffect(() => {
     // Initialize WebSocket connection
@@ -71,14 +72,23 @@ const AppContent: React.FC = () => {
     setAgentOutputs([]); // Clear previous outputs
     setShowCodeAcceptance(false); // Hide previous acceptance UI
     setOriginalCode(code); // Store original code
+    setProcessingProgress(0);
     
-    // Update agent statuses to processing
+    // Update agent statuses to processing with progress
     setAgentStatuses({
       architect: { status: 'processing', progress: 0 },
       implementer: { status: 'idle', progress: 0 },
       tester: { status: 'idle', progress: 0 },
       security: { status: 'idle', progress: 0 }
     });
+    
+    // Simulate progress updates
+    const progressInterval = setInterval(() => {
+      setProcessingProgress(prev => {
+        if (prev >= 90) return prev;
+        return prev + Math.random() * 10;
+      });
+    }, 1000);
     
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -113,6 +123,7 @@ const AppContent: React.FC = () => {
           tester: { status: 'completed', progress: 100 },
           security: { status: 'completed', progress: 100 }
         });
+        setProcessingProgress(100);
       } else {
         console.error('Processing failed:', result.error);
         setAgentStatuses({
@@ -122,6 +133,18 @@ const AppContent: React.FC = () => {
           security: { status: 'error', progress: 0 }
         });
       }
+    } catch (error) {
+      console.error('Error submitting code:', error);
+      setAgentStatuses({
+        architect: { status: 'error', progress: 0 },
+        implementer: { status: 'error', progress: 0 },
+        tester: { status: 'error', progress: 0 },
+        security: { status: 'error', progress: 0 }
+      });
+    } finally {
+      setIsProcessing(false);
+      clearInterval(progressInterval);
+    }
     } catch (error) {
       console.error('Error submitting code:', error);
       setAgentStatuses({
@@ -185,6 +208,27 @@ const AppContent: React.FC = () => {
               onSubmit={handleCodeSubmit}
               isProcessing={isProcessing}
             />
+            
+            {/* Processing Progress Indicator */}
+            {isProcessing && (
+              <div className="agent-card rounded-lg p-6">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-blue-400">Processing Code...</h3>
+                    <p className="text-sm text-gray-400">AI agents are analyzing your code</p>
+                  </div>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div 
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${processingProgress}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs text-gray-400 mt-2">{Math.round(processingProgress)}% complete</p>
+              </div>
+            )}
+            
             <AgentActivity outputs={agentOutputs} />
             {showCodeAcceptance && (
               <CodeAcceptance

@@ -172,6 +172,18 @@ Choose patterns based on your specific problem domain!`,
 - Consider performance implications
 - Plan for maintainability
 
+**5. Performance Optimization**
+- Analyze time and space complexity
+- Use appropriate data structures
+- Consider caching and memoization
+- Optimize critical paths
+
+**6. Error Handling**
+- Validate inputs thoroughly
+- Handle edge cases gracefully
+- Provide meaningful error messages
+- Implement proper logging
+
 What specific architectural challenge are you facing?`
       },
       
@@ -245,21 +257,31 @@ What specific architectural challenge are you facing?`
 - Write readable, maintainable code
 - Follow naming conventions
 - Keep functions small and focused
+- Use meaningful variable names
 
-**2. Performance**
-- Choose efficient algorithms
-- Optimize data structures
+**2. Performance Optimization**
+- Choose efficient algorithms and data structures
 - Profile and measure performance
+- Optimize critical paths
+- Use caching and memoization
 
 **3. Best Practices**
 - Follow SOLID principles
 - Use design patterns appropriately
 - Write self-documenting code
+- Handle errors gracefully
 
-**4. Refactoring**
+**4. Language-Specific Features**
+- Use modern language features
+- Leverage built-in libraries
+- Follow language conventions
+- Use appropriate frameworks
+
+**5. Code Review**
 - Improve existing code
 - Remove code smells
 - Maintain functionality while improving structure
+- Add proper documentation
 
 What specific implementation challenge do you need help with?`
       },
