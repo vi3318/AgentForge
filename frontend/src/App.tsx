@@ -82,17 +82,22 @@ const AppContent: React.FC = () => {
       security: { status: 'idle', progress: 0 }
     });
     
-    // Simulate progress updates
+    // Simulate progress updates with better timing
     const progressInterval = setInterval(() => {
       setProcessingProgress(prev => {
-        if (prev >= 90) return prev;
-        return prev + Math.random() * 10;
+        if (prev >= 85) return prev; // Stop at 85% to wait for backend
+        return prev + Math.random() * 15;
       });
-    }, 1000);
+    }, 800);
     
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       console.log('HTTP API URL:', apiUrl); // Debug log
+      
+      // Add timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch(`${apiUrl}/process-code`, {
         method: 'POST',
         headers: {
@@ -104,7 +109,10 @@ const AppContent: React.FC = () => {
           task: 'Improve this code',
           userId: user?.id 
         }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       const result = await response.json();
       console.log('Processing result:', result);
@@ -135,12 +143,24 @@ const AppContent: React.FC = () => {
       }
     } catch (error) {
       console.error('Error submitting code:', error);
+      
+      // Handle different types of errors
+      let errorMessage = 'An error occurred while processing your code.';
+      if (error.name === 'AbortError') {
+        errorMessage = 'Request timed out. Please try again with a smaller code snippet.';
+      } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      }
+      
       setAgentStatuses({
         architect: { status: 'error', progress: 0 },
         implementer: { status: 'error', progress: 0 },
         tester: { status: 'error', progress: 0 },
         security: { status: 'error', progress: 0 }
       });
+      
+      // Show error message to user
+      alert(errorMessage);
     } finally {
       setIsProcessing(false);
       clearInterval(progressInterval);

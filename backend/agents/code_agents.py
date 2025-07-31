@@ -20,26 +20,18 @@ class ArchitectAgent(BaseAgent):
         Requirements:
         {requirements}
         
-        Memory Context:
-        {self.get_memory_context()}
-        
-        Provide a detailed analysis and specific improvements. Be concrete and actionable.
+        Provide a concise analysis with 3-5 specific improvements. Be actionable and practical.
         
         Format as JSON with keys: analysis, improvements, patterns, performance, security
         
-        General improvement categories to consider:
+        Focus on:
         - Input validation and error handling
-        - Performance optimizations (time/space complexity)
-        - Code readability and maintainability
-        - Design patterns and best practices
+        - Performance optimizations
+        - Code readability
         - Security considerations
-        - Documentation and type hints
-        - Edge case handling
-        - Memory management
-        - Algorithm efficiency
-        - Code organization and structure
+        - Documentation
         
-        Be specific about what to change and why. Provide concrete, actionable suggestions.
+        Keep responses concise and actionable.
         """
         
         response = self.model.generate_content(prompt)
@@ -70,27 +62,19 @@ class ImplementationAgent(BaseAgent):
         Suggested Improvements:
         {suggestions}
         
-        Memory Context:
-        {self.get_memory_context()}
-        
-        Provide an ACTUALLY IMPROVED version of the code with the suggested changes implemented.
+        Provide an improved version of the code with the key improvements implemented.
         Make the code better, more robust, and follow best practices.
         
         Format as JSON with keys: improved_code, comments, tests, benchmarks
         
-        Improvement guidelines:
-        - Add proper error handling and input validation
-        - Improve performance where possible
-        - Add comprehensive documentation and type hints
-        - Follow language-specific best practices
-        - Make code more readable and maintainable
-        - Add edge case handling
-        - Use modern language features when appropriate
-        - Implement proper logging and debugging
-        - Consider security implications
-        - Add unit tests for critical functionality
+        Focus on:
+        - Error handling and input validation
+        - Performance improvements
+        - Documentation and type hints
+        - Code readability
+        - Security considerations
         
-        The improved_code should be the actual enhanced version with better performance, error handling, and documentation.
+        Keep the improved code concise and practical.
         """
         
         response = self.model.generate_content(prompt)
@@ -112,28 +96,20 @@ class TestingAgent(BaseAgent):
         code = input_data.get("code", "")
         
         prompt = f"""
-        You are a Senior QA Engineer. Create comprehensive tests for this code.
+        You are a Senior QA Engineer. Create tests for this code.
         
         Code:
         {code}
         
-        Memory Context:
-        {self.get_memory_context()}
+        Provide essential tests:
+        1. Unit tests for main functions
+        2. Edge case tests (null inputs, empty arrays)
+        3. Error handling tests
+        4. Basic performance considerations
         
-        Provide comprehensive testing strategy:
-        1. Unit tests for all functions/methods
-        2. Integration tests for component interactions
-        3. Edge case tests (null inputs, empty arrays, boundary conditions)
-        4. Performance tests (time complexity, memory usage)
-        5. Error handling tests
-        6. Security tests (input validation, injection attacks)
-        7. Accessibility tests (if applicable)
-        8. Test coverage analysis and recommendations
+        Format as JSON with keys: unit_tests, edge_cases, error_tests, performance_notes
         
-        Consider the programming language and framework used.
-        Provide actual test code, not just descriptions.
-        
-        Format as JSON with keys: unit_tests, integration_tests, edge_cases, performance_tests, security_tests, coverage, recommendations
+        Keep tests concise and practical.
         """
         
         response = self.model.generate_content(prompt)
@@ -160,25 +136,15 @@ class SecurityAgent(BaseAgent):
         Code:
         {code}
         
-        Memory Context:
-        {self.get_memory_context()}
+        Provide essential security analysis:
+        1. Input validation issues
+        2. Data exposure risks
+        3. Authentication concerns
+        4. Security best practices
         
-        Provide comprehensive security analysis:
-        1. Input validation vulnerabilities (SQL injection, XSS, buffer overflow)
-        2. Authentication and authorization issues
-        3. Data exposure and privacy concerns
-        4. Cryptographic weaknesses
-        5. Resource management issues (memory leaks, DoS)
-        6. Third-party dependency risks
-        7. Configuration security issues
-        8. Logging and monitoring gaps
-        9. Compliance considerations (GDPR, HIPAA, PCI-DSS if applicable)
-        10. Security best practices recommendations
+        Format as JSON with keys: vulnerabilities, risk_level, fixes, best_practices
         
-        Consider the programming language, framework, and deployment context.
-        Provide specific, actionable security fixes.
-        
-        Format as JSON with keys: vulnerabilities, risk_assessment, fixes, best_practices, compliance, recommendations
+        Keep analysis concise and actionable.
         """
         
         response = self.model.generate_content(prompt)
